@@ -1,0 +1,29 @@
+{
+  "name": "subscribepro/subscribepro-php-order-creating",
+  "homepage": "http://www.subscribepro.com",
+  "description": "Subscribe Pro PHP Order Placement",
+  "keywords": ["subscribe", "pro"],
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Swarming Technology",
+      "homepage": "http://swarmingtech.com"
+    },
+    {
+      "name": "SUBSCRIBE PRO INC",
+      "homepage": "http://www.subscribepro.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.5",
+    "guzzlehttp/guzzle": "^6.0",
+    "guzzlehttp/oauth-subscriber": "^0.3.0"
+  },
+  "require-dev": {
+    "monolog/monolog": "^1.16.0"
+  },
+  "autoload": {
+    "files": ["functions.php"]
+  }
+}
