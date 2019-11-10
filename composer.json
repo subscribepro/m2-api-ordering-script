@@ -17,6 +17,7 @@
   ],
   "require": {
     "php": ">=5.5",
+    "ext-json": "*",
     "guzzlehttp/guzzle": "^6.0",
     "guzzlehttp/oauth-subscriber": "^0.3.0"
   },

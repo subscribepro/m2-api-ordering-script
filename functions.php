@@ -2,14 +2,16 @@
 
 /**
  * @param \Psr\Http\Message\ResponseInterface $response
- * @param bool $graceful
+ * @param bool                                $graceful
+ *
  * @return array|int|null
  * @throws Exception
  */
 function processResponse($response, $graceful = false)
 {
     if ($response->getStatusCode() < 300) {
-        $body = (string)$response->getBody();
+        $body = (string) $response->getBody();
+
         return !empty($body) ? json_decode($body, true) : $response->getStatusCode();
     }
     $errorMessage = getErrorMessage($response);
@@ -21,13 +23,14 @@ function processResponse($response, $graceful = false)
 
 /**
  * @param \Psr\Http\Message\ResponseInterface $response
+ *
  * @return string
  */
 function getErrorMessage($response)
 {
-    $errorBody = json_decode((string)$response->getBody(), true);
+    $errorBody = json_decode((string) $response->getBody(), true);
 
-    $message = !empty($errorBody['message']) ? $errorBody['message'] : $response->getReasonPhrase();
+    $message    = !empty($errorBody['message']) ? $errorBody['message'] : $response->getReasonPhrase();
     $parameters = !empty($errorBody['parameters']) ? $errorBody['parameters'] : [];
 
     foreach ($parameters as $name => $value) {
@@ -39,22 +42,22 @@ function getErrorMessage($response)
 
 /**
  * @param string $title
- * @param mixed $result
+ * @param mixed  $result
  */
 function printResult($title, $result)
 {
-    echo $title . ": ";
+    echo $title.": ";
     print_r($result);
     echo "\n";
 }
 
 /**
  * @param \GuzzleHttp\Client $client
- * @param int $cartId
+ * @param int                $cartId
  */
 function cleanQuoteItems($client, $cartId)
 {
-    $response = $client->get("rest/V1/carts/{$cartId}/items");
+    $response  = $client->get("rest/V1/carts/{$cartId}/items");
     $cartItems = processResponse($response);
     if (!empty($cartItems)) {
         foreach ($cartItems as $cartItem) {
