@@ -17,6 +17,12 @@ Configuration must be done in the PHP file by updating the variables set in the 
 
 ## Usage
 
+Install dependencies with composer:
+
+```bash
+composer install
+```
+
 Run the script from a network-enabled shell with PHP installed:
 
 ```bash
