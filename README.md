@@ -28,3 +28,7 @@ Run the script from a network-enabled shell with PHP installed:
 ```bash
 php index.php
 ```
+
+### Enabling Additional Debug Logging
+
+If you need to log API requests and responses, set the `$saveDebuggingLogs` variable to `true`. Logs will be output in the following location: `log/magento-api-{YYYY-MM-DD}.log`

@@ -6,6 +6,13 @@ use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\MessageFormatter;
+use Monolog\Logger;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Formatter\LineFormatter;
+
+$saveDebuggingLogs = false; // If you need extra logging of request/response make this true
 
 $baseUrl = '';
 
@@ -77,6 +84,22 @@ $payment = [
 $coupon = '';
 
 $handlerStack = HandlerStack::create();
+$clientConfig = [
+    'base_uri' => $baseUrl,
+    'handler'  => $handlerStack,
+    RequestOptions::HTTP_ERRORS => false,
+    RequestOptions::AUTH => 'oauth'
+];
+if ($saveDebuggingLogs) {
+    $fileName = 'log/magento-api.log';
+    $lineFormat = "[%datetime%] %channel%.%level_name%: %message%\n";
+    $messageFormat = "{method} - {uri}\nRequest body: {req_body}\n{code} {phrase}\nResponse body: {res_body}\n{error}\n";
+
+    $logHandler = new RotatingFileHandler($fileName);
+    $logHandler->setFormatter(new LineFormatter($lineFormat, null, true));
+    $handlerStack->push(Middleware::log(new Logger('Logger', [$logHandler]), new MessageFormatter($messageFormat)), 'logger');
+}
+
 $middlewareOauth1 = new Oauth1([
     'consumer_key'    => $consumerKey,
     'consumer_secret' => $consumerSecret,
@@ -85,13 +108,7 @@ $middlewareOauth1 = new Oauth1([
 ]);
 $handlerStack->push($middlewareOauth1);
 
-$client = new Client([
-    'base_uri' => $baseUrl,
-    'handler'  => $handlerStack,
-    RequestOptions::HTTP_ERRORS => false,
-    RequestOptions::AUTH => 'oauth'
-]);
-
+$client = new Client($clientConfig);
 
 try {
    /* \Magento\Quote\Api\CartManagementInterface::createEmptyCartForCustomer*/
