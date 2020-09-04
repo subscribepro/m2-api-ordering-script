@@ -29,29 +29,46 @@ $consumerSecret    = '';
 $accessToken       = '';
 $accessTokenSecret = '';
 
+// Magento 2 extension version: either '1.1.x' , '1.2.x' , or '1.3.x'
+$extensionVersion = '';
+
 // Details for the customer, products, etc to order
 $customerId = '';
-$products   = [
-    [
+
+// Subscription Options for M2 versions 1.1.x:
+if($extensionVersion == '1.1.x') {
+    $subscriptionOptions = [
+        'is_fulfilling'               => '',
+        'subscription_id'             => '',
+        'interval'                    => '',
+        'reorder_ordinal'             => '',
+    ];
+}
+// Subscription Options for M2 versions 1.2.x and above:
+else {
+    $subscriptionOptions = [
+        /* Allowed options */
+        'item_fulfils_subscription'   => true,
+        'item_added_by_subscribe_pro' => false,
+        'interval'                    => '',
+        'subscription_id'             => '',
+        'reorder_ordinal'             => '',
+        // 'fixed_price' => '',             // optional, but if included it cannot be empty
+        'next_order_date'             => '',
+        // 'custom_options' => [],              // optional, but if included it cannot be empty
+        // 'configurable_item_options' => [],   // optional, but if included it cannot be empty
+        // 'bundle_options' => []               // optional, but if included it cannot be empty
+    ];
+}
+
+$products = [
         'sku'            => '',
         'qty'            => '',
         'product_option' => [
             'extension_attributes' => [
-                'subscription_option' => [ /* Allowed options */
-                    'item_fulfils_subscription'   => true,
-                    'item_added_by_subscribe_pro' => false,
-                    'interval'                    => '',
-                    'subscription_id'             => '',
-                    'reorder_ordinal'             => '',
-                    // 'fixed_price' => '',             // optional, but if included it cannot be empty
-                    'next_order_date'             => '',
-                ],
-                // 'custom_options' => [],              // optional, but if included it cannot be empty
-                // 'configurable_item_options' => [],   // optional, but if included it cannot be empty
-                // 'bundle_options' => []               // optional, but if included it cannot be empty
+                'subscription_option' => $subscriptionOptions
             ],
         ],
-    ],
 ];
 
 // Billing and shipping information
@@ -128,7 +145,13 @@ $client = new Client($clientConfig);
 
 try {
     /* \Magento\Quote\Api\CartManagementInterface::createEmptyCartForCustomer*/
-    $response = $client->post("rest/V1/customers/{$customerId}/carts");
+
+    if($extensionVersion == '1.3.x') {
+        $response = $client->post("rest/V1/swarming_subscribepro/customers/{$customerId}/carts");
+    }
+    else {
+        $response = $client->post("rest/V1/customers/{$customerId}/carts");
+    }
     $cartId   = processResponse($response);
     printResult('Cart ID', $cartId);
 
@@ -179,4 +202,9 @@ try {
 } catch (\Exception $e) {
     echo $e->getMessage()."\n";
     echo $e->getTraceAsString()."\n";
+
+    // For M2 ext. v1.3.x, deactivate quote
+    if($extensionVersion == '1.3.x') {
+        $client->post("rest/V1/swarming_subscribepro/carts/${cartId}/deactivate");
+    }
 }
