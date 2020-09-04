@@ -21,7 +21,7 @@ use Monolog\Formatter\LineFormatter;
 $saveDebuggingLogs = false;
 
 // Base URL for the Magento 2 API
-$baseUrl = '';
+$baseUrl = 'https://www.yourmagentostore.com/';
 
 // Magento 2 API Credentials
 $consumerKey       = '';
